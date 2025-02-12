@@ -3,29 +3,16 @@ library(readr)
 library(tidyverse)
 library(dplyr)
 library(mosaic)
+library(data.table)
 
 ```
 
 
-
-
-
-
 ```{r Load Data}
-# Load required packages
-library(data.table)
 
-
-<<<<<<< HEAD
-=======
 options(timeout = 600)
-
-# Create a temporary file for the download
->>>>>>> ba696362da8485c6104ad3f588766dde008f0530
 temp_file <- tempfile(fileext = ".csv")
-
-
-download.file("https://github.com/New-Leaf-Consulting-and-Data-Analysis/New_Leaf_Rstudio/releases/download/v1.0-data/data-final.csv", 
+download.file("https://github.com/New-Leaf-Consulting-and-Data-Analysis/big-five-personality-test/releases/download/v1.0/data-final.csv", 
               temp_file, mode = "wb")
 
 # Use fread() for fast and memory-efficient reading
@@ -56,6 +43,16 @@ colnames(con_factors_time)
 #con_factors will just have scores to questions
 con_factors <- con_factors_time %>%
   select(1:50)
+
+setDT(con_factors)
+
+
+for (col in names(con_factors)) {
+  if (is.character(con_factors[[col]])) {
+    con_factors[[col]] <- gsub("[^0-9]", "", con_factors[[col]])
+    con_factors[[col]] <- as.integer(con_factors[[col]])
+    }
+  }
 
 colnames(con_factors)
 
