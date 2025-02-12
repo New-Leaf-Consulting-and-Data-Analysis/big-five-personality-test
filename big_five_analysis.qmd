@@ -1,0 +1,96 @@
+```{r Libraries}
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(mosaic)
+
+```
+
+
+
+
+
+
+```{r Load Data}
+# Load required packages
+library(data.table)
+
+
+<<<<<<< HEAD
+=======
+options(timeout = 600)
+
+# Create a temporary file for the download
+>>>>>>> ba696362da8485c6104ad3f588766dde008f0530
+temp_file <- tempfile(fileext = ".csv")
+
+
+download.file("https://github.com/New-Leaf-Consulting-and-Data-Analysis/New_Leaf_Rstudio/releases/download/v1.0-data/data-final.csv", 
+              temp_file, mode = "wb")
+
+# Use fread() for fast and memory-efficient reading
+con <- fread(temp_file)
+
+# Check structure of the dataset
+str(con)
+head(con)
+
+#Make a sample
+set.seed(123)
+con_sample <- con[sample(.N, 100000)]
+
+```
+
+
+```{r Cleaning}
+
+#Make lighter
+#This data set (con_factors_time) will include the scores of each question and the time it took to complete every question
+
+con_factors_time <- con %>%
+  select(-dateload, -screenw, -screenh, -introelapse, -testelapse, -endelapse, -IPC, -lat_appx_lots_of_err, -long_appx_lots_of_err,-dateload,-country)
+
+colnames(con_factors_time)
+
+
+#con_factors will just have scores to questions
+con_factors <- con_factors_time %>%
+  select(1:50)
+
+colnames(con_factors)
+
+#Make a sample
+set.seed(123)
+con_factors_sample <- con_factors[sample(.N, 100000)]
+
+
+
+# Reverse negatively keyed items
+con_factors1 <- con_factors
+
+# Reverse scoring function
+reverse_score <- function(x) {
+  return(6 - x)  # Reverse the Likert scale (1-5)
+}
+
+# List of negatively keyed items for each trait
+negatively_keyed <- list(
+  EXT = c("EXT2", "EXT4", "EXT6", "EXT8", "EXT10"),
+  EST = c("EST2", "EST4", "EST6", "EST8", "EST10"),
+  AGR = c("AGR1", "AGR3", "AGR5", "AGR7"),
+  CSN = c("CSN2", "CSN4", "CSN6", "CSN8"),
+  OPN = c("OPN2", "OPN4", "OPN6", "OPN8")
+)
+
+# Reverse score the negatively keyed items for your dataset (con_factors1)
+for (trait in names(negatively_keyed)) {
+  for (item in negatively_keyed[[trait]]) {
+    con_factors1[[item]] <- reverse_score(con_factors1[[item]])
+  }
+}
+
+# View the updated dataset
+head(con_factors1)
+
+```
+
