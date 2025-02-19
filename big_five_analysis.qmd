@@ -1,9 +1,11 @@
-```{r Libraries}
+```{r Libraries, message=FALSE, warning=FALSE}
 library(readr)
 library(tidyverse)
 library(dplyr)
 library(mosaic)
 library(data.table)
+library(ggplot2)
+library(pander)
 
 ```
 
@@ -90,4 +92,75 @@ for (trait in names(negatively_keyed)) {
 head(con_factors1)
 
 ```
+
+```{r External Validity Data Set Up}
+
+con_country <- con_sample %>%
+  select(1:50)
+
+for (col in names(con_country)) {
+  if (is.character(con_country[[col]])) {
+    con_country[[col]] <- gsub("[^0-9]", "", con_country[[col]])
+    con_country[[col]] <- as.integer(con_country[[col]])
+    }
+  }
+
+# Reverse scoring function
+reverse_score <- function(x) {
+  return(6 - x)  # Reverse the Likert scale (1-5)
+}
+
+# List of negatively keyed items for each trait
+negatively_keyed <- list(
+  EXT = c("EXT2", "EXT4", "EXT6", "EXT8", "EXT10"),
+  EST = c("EST2", "EST4", "EST6", "EST8", "EST10"),
+  AGR = c("AGR1", "AGR3", "AGR5", "AGR7"),
+  CSN = c("CSN2", "CSN4", "CSN6", "CSN8"),
+  OPN = c("OPN2", "OPN4", "OPN6", "OPN8")
+)
+
+# Reverse score the negatively keyed items for your dataset (con_factors1)
+for (trait in names(negatively_keyed)) {
+  for (item in negatively_keyed[[trait]]) {
+    con_country[[item]] <- reverse_score(con_country[[item]])
+  }
+}
+
+con_country <- con_country %>%
+  mutate(Country = con_sample$country,
+         lat = con_sample$lat_appx_lots_of_err,
+         lon = con_sample$long_appx_lots_of_err) %>%
+  group_by(Country)
+
+```
+
+# External Validity
+
+The extent that the results of a study or test can be applied or generalized beyond the specific conditions and population of the experiment. 
+
+We are going to explore 
+
+- Sampling Bias
+- Temporal Validity
+- Effect Size or Practical Significance
+- Interaction Effect
+
+## Sampling Bias
+
+This data set has a large amount of data from all over the globe. To test that it is evenly distributed across the globe, we will view this data in a few different aspects. 
+
+NOTE: The collectors of this data set clarified that the country, latitude, and longitude coordinates are approximate and not reliable. For the size of data that we are using, and for our purposes of seeing if the data is wide spread, we can still benefit from seeing this data displayed. 
+
+```{r External Validity - Sampling Bias}
+
+
+
+```
+
+
+
+
+
+
+
 
